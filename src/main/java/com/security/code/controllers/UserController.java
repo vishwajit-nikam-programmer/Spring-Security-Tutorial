@@ -31,11 +31,12 @@ public class UserController {
 
 
     @GetMapping("signup")
-    public UserEntity saveUserWithEncodedPassword(@RequestParam String username, @RequestParam String password){
+    public UserEntity saveUserWithEncodedPassword(@RequestParam String username, @RequestParam String password, @RequestParam String role){
         UserEntity user = new UserEntity();
         user.setUsername(username);
         user.setPassword(passwordEncoder.encode(password));
         user.setIsActive(true);
+        user.setRole(role);
 
         userRepository.save(user);
         return user;
@@ -43,11 +44,20 @@ public class UserController {
 
     @PostMapping("/authenticate")
     public String authenticateUser(@RequestBody AuthRequest authRequest){
+        //Authentication is a class from Spring Security
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(),
                  authRequest.getPassword()));
 
         if(authenticate.isAuthenticated()){
-            return jwtServiceImpl.generateToken(authRequest.getUsername());
+            //Here we traverse the authorities and extract the required role
+            // and put these role into below function
+            String role = authenticate
+                    .getAuthorities()
+                    .iterator()
+                    .next()
+                    .getAuthority()
+                    .replace("ROLE_","");//Every role starts with ROLE_ keyword to avoid it we replaced ROLE_ with empty String ""
+            return jwtServiceImpl.generateToken(authRequest.getUsername(),role);
         }
         return null;
     }

@@ -9,12 +9,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 @Configuration
 public class JWTFilter extends OncePerRequestFilter {
@@ -28,17 +30,20 @@ public class JWTFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
         String token = null;
 
-        if(authHeader != null &&authHeader.startsWith("Bearer")){
+        if(authHeader != null && authHeader.startsWith("Bearer")){
             token = authHeader.substring(7);
         }
 
         if(token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             Claims claims = jwtServiceImpl.verifySignatureAndExtractAllClaims(token);
+            String role = claims.get("Role",String.class);
+            List<SimpleGrantedAuthority> simpleGrantedAuthorities = List.of(new SimpleGrantedAuthority("ROLE_"+role));
+
             if (!jwtServiceImpl.isTokenExpired(token)) {
                    //if token is not expired then I need to set that
                   // token into SecurityContextHolder "SecurityContextHolder.getContext().getAuthentication()"
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                        new UsernamePasswordAuthenticationToken(claims.getSubject(),null,new ArrayList<>());
+                        new UsernamePasswordAuthenticationToken(claims.getSubject(),null,simpleGrantedAuthorities);
                 usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                  SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             }

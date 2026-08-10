@@ -23,4 +23,7 @@ public class UserEntity {
 
     @Column(name = "isactive")
     private Boolean isActive;
+
+    @Column(name = "role")
+    private String Role;
 }

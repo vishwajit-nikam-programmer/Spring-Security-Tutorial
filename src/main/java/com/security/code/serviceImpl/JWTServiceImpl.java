@@ -14,12 +14,16 @@ import java.util.HashMap;
 public class JWTServiceImpl {
    public static final String SECRET = "MySuperSecretKey12345#129vs1299x9191gu29snsnhxh18w20bx";
 
-    public String generateToken(String username){
+    public String generateToken(String username,String role){
+         HashMap<String, Object> claims = new HashMap<>();
+         claims.put("Role", role);
+
            return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis()+ 3600*1000*24))
-                .addClaims(new HashMap<>())
+                   //Here we added hashmap wala claims
+                .addClaims(claims)
                 .signWith(getSignedKey(), SignatureAlgorithm.HS256).compact();
     }
 

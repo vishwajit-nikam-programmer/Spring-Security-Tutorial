@@ -4,6 +4,7 @@ import com.security.code.entities.UserEntity;
 import com.security.code.repository.UserRepository;
 import com.security.code.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -32,7 +33,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return User.builder()
                 .username(user.getUsername())
                 .password(user.getPassword())
-                .authorities(Collections.emptyList())
+                .authorities(new SimpleGrantedAuthority((user.getRole())))
                 .build();
     }
 
