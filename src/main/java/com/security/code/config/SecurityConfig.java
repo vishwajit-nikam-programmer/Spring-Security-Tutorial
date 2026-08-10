@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
     @Autowired
     private final JWTFilter jwtFilter;
@@ -50,17 +52,17 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // All user APIs accessible to everyone
                         .requestMatchers("/user/**").permitAll()
-
-                        // Only ADMIN can create rooms
-                        .requestMatchers(HttpMethod.POST, "/rooms/**").hasRole("ADMIN")
-
-                        // Get room by ID accessible to ADMIN, CUSTOMER, STAFF
-                        .requestMatchers(HttpMethod.GET, "/rooms/*").hasAnyRole("ADMIN", "CUSTOMER", "STAFF")
-
-                        // Get all rooms accessible to ADMIN and STAFF
-                        .requestMatchers(HttpMethod.GET, "/rooms/all").hasAnyRole("ADMIN", "STAFF")
-
-                        // Any other request must be authenticated
+//
+//                        // Only ADMIN can create rooms
+//                        .requestMatchers(HttpMethod.POST, "/rooms/**").hasRole("ADMIN")
+//
+//                        // Get room by ID accessible to ADMIN, CUSTOMER, STAFF
+//                        .requestMatchers(HttpMethod.GET, "/rooms/*").hasAnyRole("ADMIN", "CUSTOMER", "STAFF")
+//
+//                        // Get all rooms accessible to ADMIN and STAFF
+//                        .requestMatchers(HttpMethod.GET, "/rooms/all").hasAnyRole("ADMIN", "STAFF")
+//
+//                        // Any other request must be authenticated
                         .anyRequest().authenticated()
                 )
 //Pass this jwtFilter before the UsernamePasswordAuthenticationFilter

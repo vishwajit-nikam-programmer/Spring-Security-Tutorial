@@ -1,5 +1,6 @@
 package com.security.code.filters;
 
+import com.security.code.constants.Role;
 import com.security.code.serviceImpl.JWTServiceImpl;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -36,9 +37,14 @@ public class JWTFilter extends OncePerRequestFilter {
 
         if(token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             Claims claims = jwtServiceImpl.verifySignatureAndExtractAllClaims(token);
-            String role = claims.get("Role",String.class);
-            List<SimpleGrantedAuthority> simpleGrantedAuthorities = List.of(new SimpleGrantedAuthority("ROLE_"+role));
+            //String role = claims.get("Role",String.class);
+            Role role = Role.valueOf("ROLE_"+claims.get("Role",String.class));
 
+            List<SimpleGrantedAuthority> simpleGrantedAuthorities = new ArrayList<>();
+            simpleGrantedAuthorities.add(new SimpleGrantedAuthority(role.name()));
+            role.getPermissions().forEach(permission -> {
+                simpleGrantedAuthorities.add(new SimpleGrantedAuthority(permission.name()));
+            });
             if (!jwtServiceImpl.isTokenExpired(token)) {
                    //if token is not expired then I need to set that
                   // token into SecurityContextHolder "SecurityContextHolder.getContext().getAuthentication()"

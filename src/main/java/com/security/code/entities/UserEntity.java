@@ -1,5 +1,6 @@
 package com.security.code.entities;
 
+import com.security.code.constants.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,5 +26,8 @@ public class UserEntity {
     private Boolean isActive;
 
     @Column(name = "role")
-    private String Role;
+    //By using below annotation data will saved in db
+    //in string format
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }

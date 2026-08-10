@@ -1,5 +1,6 @@
 package com.security.code.controllers;
 
+import com.security.code.constants.Role;
 import com.security.code.dtos.AuthRequest;
 import com.security.code.entities.UserEntity;
 import com.security.code.repository.UserRepository;
@@ -31,7 +32,7 @@ public class UserController {
 
 
     @GetMapping("signup")
-    public UserEntity saveUserWithEncodedPassword(@RequestParam String username, @RequestParam String password, @RequestParam String role){
+    public UserEntity saveUserWithEncodedPassword(@RequestParam String username, @RequestParam String password, @RequestParam Role role){
         UserEntity user = new UserEntity();
         user.setUsername(username);
         user.setPassword(passwordEncoder.encode(password));
